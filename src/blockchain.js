@@ -72,7 +72,7 @@ class Blockchain {
                 }
                 block.hash = SHA256(JSON.stringify(block)).toString();
 
-                const errs = this.validateChain();
+                const errs = await this.validateChain();
                 if (errs.length > 0) {
                     reject(errs);
                 } else {
@@ -142,7 +142,7 @@ class Blockchain {
      */
     getBlockByHash(hash) {
         return new Promise((resolve, reject) => {
-            const block = this.chain.find(x => (x.hash === hash));
+            const block = this.chain.find(block => (block.hash === hash));
             if (block) {
                 resolve(block);
             } else {
@@ -158,7 +158,7 @@ class Blockchain {
      */
     getBlockByHeight(height) {
         return new Promise((resolve, reject) => {
-            let block = this.chain.filter(p => p.height === height)[0];
+            let block = this.chain.find(p => p.height === height);
             if (block) {
                 resolve(block);
             } else {
@@ -197,8 +197,8 @@ class Blockchain {
 
             for (let i = 0; i < this.chain.length; i++) {
                 const block = this.chain[i];
-                const tamperErrors = await block.validate();
-                if (tamperErrors.length > 0) {
+                const isValidated = await block.validate();
+                if (isValidated) {
                     errors.push(`${block.hash} has been tampered with!`)
                 }
 
